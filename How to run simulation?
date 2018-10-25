@@ -1,0 +1,84 @@
+Xhell 登录linux服务器
+用户名+密码
+SSH Secure File Transfer: quick connect+linux服务器+用户名+密码
+
+Xshell进入服务器后
+cd /home/zhangzhe/codespace/hotspot/HotSpot-6.0
+hotspot -c hotspot.config -f 8x8.flp -p 8x8.ptrace -steady_file 8x8.steady -model_type grid -grid_steady_file 8x8.grid.steady
+//根据自己设置好的flp, ptrace文件生成温度分布steady文件
+grid_thermal_map.pl 8x8.flp 8x8.grid.steady > 8x8.svg
+//把温度分布用彩色svg文件表示
+convert -font Helvetica svg:8x8.svg 8x8.pdf
+//把svg文件转换成pdf文件输出
+
+flp文件：处理器核分布的版图
+#include "stdio.h"
+
+main()
+{
+	int i;
+	int j=1;
+	float width=0.0012;				//核的宽度 
+	float height=0.0012;			//核的高度 
+	float offset_w=0;				//相比较原点宽度上的偏移量 
+	float offset_h=0;				//相比较原点高度上的偏移量
+	
+	FILE *fp;          				//新建文件指针变量fp 
+	fp=fopen("8x8flp.txt","w+");	//打开文件 8x8flp.txt
+	
+	for(i=1;i<=8;i++)  			 
+	{
+		while(j<=8)
+		{
+			fprintf(fp,"P_%d_%d\t%f\t%f\t%f\t%f\n",i,j,width,height,offset_w,offset_h);
+			j++;
+			offset_w=offset_w+0.00125;
+			
+		}
+		j=1;
+		offset_w=0;
+		offset_h=offset_h+0.00125;
+	}
+	fprintf(fp,"\n"); 			//换行 
+	fclose(fp);					//关闭文件 
+ } 
+ 
+ ptrcae文件：为每一个核的功率追踪
+ 
+ steady文件：根据flp文件和ptrace文件生成温度分布文件steady
+ cp 8x8.steady 8x8.txt
+ //把steady文件转换成txt文件
+ 然后读出txt文件中的温度值，拷贝到main.cpp中
+ #include "stdio.h"
+#include "string.h" 
+
+main()
+{
+	int i; 
+	float j;
+	char str[10];
+	FILE *fp;          			//新建文件指针变量fp 
+	fp=fopen("8x8.txt","r");	//打开文件 8x8.txt 
+	
+	
+	for(i=1;i<=64;i++)  			
+	{
+		fscanf(fp,"%s	%f",&str,&j);
+		printf("%6.2f,",j);
+		if(i%8==0)
+		{
+			printf("\n\t\t");			
+		 } 
+
+	}
+	
+	fclose(fp);      //关闭文件 
+ } 
+ 
+ 
+ cd happy
+ cd NOC_Power_Cal/
+ g++ -std=c++11 -o main main.cpp graph/graph.cpp 
+ //使用g++11编译器进行编译，C99编译器不支持
+ ./main
+ 之后便得到5条路径和对应的功率
