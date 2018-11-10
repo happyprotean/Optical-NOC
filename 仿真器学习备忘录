@@ -32,3 +32,9 @@ active_number矩阵：如a[0][1]=1表示从0进，从1出，即从核进从路�
 passive表示光直接通过，active表示光要进行转向，crossbar表示两条连线的交点（损失功耗）
 
 wait(0.4,):在一个clock内的某个时刻触发
+
+仿真模型的分类
+1.仿真型应用uniform:分为XY和proposed(带Q-learning)，在noc_3D_files文件夹中，用3d.mesh.sh和ex_uniform来跑，sh ex_uniform
+2.实际应用applicattion:分为XY和pproposed(带Q-learning)，就是学长给我的那一版
+
+画图软件：用excel或者gnuplot
