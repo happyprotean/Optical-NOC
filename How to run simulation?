@@ -10,6 +10,14 @@ grid_thermal_map.pl 8x8.flp 8x8.grid.steady > 8x8.svg
 //把温度分布用彩色svg文件表示
 convert -font Helvetica svg:8x8.svg 8x8.pdf
 //把svg文件转换成pdf文件输出
+cp 8x8.steady 8x8.txt
+//将8x8.txt复制到8x8.steady文件夹读取温度，最后将读取的温度复制到main.cpp中去
+ cd happy
+ cd NOC_Power_Cal/
+ g++ -std=c++11 -o main main.cpp graph/graph.cpp 
+ //使用g++11编译器进行编译，C99编译器不支持
+ ./main
+ 之后便得到5条路径和对应的功率
 
 flp文件：处理器核分布的版图
 #include "stdio.h"
@@ -76,9 +84,4 @@ main()
  } 
  
  
- cd happy
- cd NOC_Power_Cal/
- g++ -std=c++11 -o main main.cpp graph/graph.cpp 
- //使用g++11编译器进行编译，C99编译器不支持
- ./main
- 之后便得到5条路径和对应的功率
+
