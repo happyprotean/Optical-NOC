@@ -1,0 +1,98 @@
+Winding path block: Hot regions force traffic to follow a winding path to destination
+code:
+#include "stdio.h"
+#include "string.h" 
+
+main()
+{
+	int i,j;
+	int n=1000;
+	float k=0;
+	FILE *fp;          			//新建文件指针变量fp 
+	fp=fopen("8x8ptrace.txt","w+");	//打开文件 8x8.txt 
+	
+	for(i=1;i<=8;i++)  			//输出节点名称，如 P_1_1 
+	{
+		for(j=1;j<=8;j++)
+		{
+			if(i==8&&j==8)
+				fprintf(fp,"P_%d_%d",i,j);
+			else
+				fprintf(fp,"P_%d_%d\t",i,j);
+		}
+	}
+	fprintf(fp,"\n"); 			//换行 
+	
+	float sp(int t)
+	{
+		float power;
+		if(t<=n/4)
+			power=0.192;
+		else if(t<=9*n/10)
+			power=1.9;
+		else
+			power=0;
+	    return power;
+	}
+	
+	float p(int t)
+	{
+		float power;
+		power=1.9;
+	    return power;
+	}
+	
+	for(i=1;i<=n;i++)  			//输入各个节点的功率 
+	{
+		fprintf(fp,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t",p(i),k,k,k,k,k,k,k);  				//P_1_1 to P_1_8 
+		fprintf(fp,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t",k,k,k,k,k,sp(i),sp(i),k);
+		fprintf(fp,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t",k,k,k,k,sp(i),sp(i),k,k);
+		fprintf(fp,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t",k,k,k,sp(i),p(i),sp(i),k,k);
+		fprintf(fp,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t",k,k,k,sp(i),sp(i),sp(i),sp(i),k);
+		fprintf(fp,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t",k,k,k,sp(i),sp(i),sp(i),k,k);
+		fprintf(fp,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t",k,k,sp(i),sp(i),k,k,k,k);
+		fprintf(fp,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f",k,sp(i),k,k,k,k,k,k);  //P_8_1 to P_8_8 
+		fprintf(fp,"\n");
+	}
+	
+	fclose(fp);      //关闭文件 
+ } 
+
+ptrace生成的节点温度如下：最低为59.33，最高为71.2，单位摄氏度
+		66.62,59.40,58.81,58.90,59.13,59.54,59.42,58.85,
+                59.37,58.99,59.02,59.33,60.23,64.78,64.24,59.34,
+                58.73,58.94,59.33,60.43,65.50,65.61,60.39,59.21,
+                58.71,59.02,59.88,65.46,68.49,66.06,60.54,59.29,
+                58.73,59.09,60.07,65.77,66.61,66.17,64.69,59.55,
+                58.76,59.20,60.38,65.61,65.80,65.20,60.20,59.12,
+                58.86,59.78,64.43,64.89,60.43,59.81,59.17,58.80,
+                59.15,63.92,60.00,59.67,59.22,58.97,58.77,58.59,
+
+Test 1: src 17 to des 60, the best is xy 20.4095
+23.6083	17	25	26	34	42	50	58	59	60	
+23.1988	17	18	19	20	28	36	44	52	60	
+23.1724	17	25	33	41	49	50	51	52	60	
+21.2882	17	18	26	34	42	50	58	59	60	
+20.4095	17	18	19	27	35	43	51	59	60	
+
+Test 2: src 24 to des 4, the best is 24.8029, the worst is xy 29.5563, xy power is 27.3993, optimising rate is 9.48%
+29.5563	32	24	16	8	9	1	2	3	4	
+27.4713	32	33	25	17	9	1	2	3	4	
+27.4713	32	24	16	8	9	10	11	12	4	
+27.3993	32	33	34	35	36	28	20	12	4	
+24.8029	32	24	16	8	0	1	2	3	4	
+
+Test 3: src 48 to des 5, the best is xy 27.244, the worst is yx 30.8327
+30.8327	48	40	32	24	16	8	0	1	2	3	4	5	
+30.6755	48	49	50	51	43	35	27	19	11	3	4	5	
+30.6363	48	49	50	42	34	26	18	10	2	3	4	5	
+30.5109	48	49	50	51	52	44	36	28	20	12	4	5	
+27.244	48	49	50	51	52	53	45	37	29	21	13	5
+//question:为什么xy转弯处的温度高，反而比yx转弯处温度低的功耗还低？是因为edge上的功耗更高吗？
+
+Test 4: src 59 to des 31, the best is xy 23.61, the worst is yx 28.5922
+28.5922	59	51	43	35	27	28	29	30	31	
+28.3634	59	60	61	62	54	55	47	39	31	
+27.4713	59	51	52	53	54	55	47	39	31	
+27.4713	59	60	61	62	54	46	38	30	31	
+23.61	59	60	61	62	63	55	47	39	31	
