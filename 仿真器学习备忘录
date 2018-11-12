@@ -38,3 +38,9 @@ wait(0.4,):在一个clock内的某个时刻触发
 2.实际应用applicattion:分为XY和pproposed(带Q-learning)，就是学长给我的那一版
 
 画图软件：用excel或者gnuplot
+
+teardown 表示拆包，当在预约路径的时候发现路径已经被占住了，需要发送一个teardown的拆解之前预约过的路径的包，重新规划路径
+
+partial:??
+
+
